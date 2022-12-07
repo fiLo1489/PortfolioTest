@@ -153,6 +153,16 @@ namespace SemestralnaPracaTest
                 new SelectElement(driver.FindElement(By.XPath("//select[@id='categoryInput']"))).SelectByIndex(category);
                 driver.FindElement(By.XPath("//textarea[@id='descriptionInput']")).SendKeys(description);
                 driver.FindElement(By.XPath("//input[@id='dateInput']")).SendKeys(date);
+                driver.FindElement(By.XPath("//button[contains(text(),'ODOSLAŤ')]")).Click();
+                Assert.IsTrue(driver.FindElement(By.XPath("//p[contains(text(),'požiadavka bola úspešne zaregistrovaná')]")).Displayed);
+
+                driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
+                driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA ŽIADOSTÍ')]")).Click();
+                driver.FindElement(By.XPath("//body/div[2]/div[1]/div[3]/a[1]/i[1]")).Click();
+                Assert.AreEqual(driver.FindElement(By.XPath("//textarea[@id='descriptionInput']")).GetAttribute("value").ToString(), description);
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='statusInput']")).GetAttribute("value").ToString(), "čakajúce");
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='createdInput']")).GetAttribute("value").ToString(), DateTime.Now.ToString("yyy-MM-dd"));
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='scheduledInput']")).GetAttribute("value").ToString(), date); // TODO nefunguje
 
                 driver.Quit();
 
