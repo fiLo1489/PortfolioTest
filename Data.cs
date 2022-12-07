@@ -28,15 +28,15 @@ namespace SemestralnaPracaTest
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public string GetRandomDate(string table)
+        public DateTime GetRandomDate(string table)
         {
-            string date;
+            DateTime date;
 
             do
             {
-                date = DateTime.Now.AddDays(GetRandomNumber(90)).ToString("MM-dd-yyyy");
+                date = DateTime.Now.AddDays(GetRandomNumber(90));
             }
-            while (!CheckDate(table, date));
+            while (!CheckRequestDate(date));
 
             return date;
         }
@@ -46,10 +46,10 @@ namespace SemestralnaPracaTest
             connection.Close();
         }
 
-        private bool CheckDate(string table, string date)
+        public bool CheckRequestDate(DateTime date)
         {
             bool valid = false;
-            string query = "select count(*) from " + table + " where SCHEDULED = CONVERT(VARCHAR(10), '" + date + "', 110);";
+            string query = "select count(*) from REQUESTS where SCHEDULED = '" + date.ToString("yyyy-MM-dd") + "'";
 
             using (SqlCommand cmd = new SqlCommand(query, connection))
             {

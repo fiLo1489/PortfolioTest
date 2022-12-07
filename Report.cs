@@ -17,7 +17,7 @@ namespace SemestralnaPracaTest
             line = 1;
         }
 
-        public void Write(string name, bool result)
+        public void Write(string name, bool result, Exception exception)
         {
             worksheet.Cell(line, 1).Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
             worksheet.Cell(line, 2).Value = name;
@@ -30,11 +30,12 @@ namespace SemestralnaPracaTest
             {
                 worksheet.Cell(line, 3).Value = "NOK";
                 worksheet.Cell(line, 3).Style.Fill.BackgroundColor = XLColor.Red;
+                worksheet.Cell(line, 4).Value = exception.Message;
             }
             line++;
         }
 
-        public void Close()
+        public void Save()
         {
             worksheet.Column(1).Style.NumberFormat.Format = "dd-MM-yyyy HH:mm:ss";
             worksheet.Columns().AdjustToContents();
