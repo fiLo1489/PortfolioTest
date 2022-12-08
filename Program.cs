@@ -6,24 +6,19 @@
         {
             Test test = new Test();
 
-            //test.LoginLogoutWithCorrectCredentialsUser();
-            //test.ChangeCredentialsUser(null);
-            //test.ChangeCredentialsUser(false);
-            //test.RegisterCorrectCredentialstUser();
-            //test.CannotRegisterTwiceUser();
-            //test.SetAdminRoleAdmin();
-            //test.CheckStatisticsAdmin();
-            //test.DeleteUserAdmin();
-            //test.SendRequestUser();
-            //test.EditRequestUser();
-            //test.DeleteRequestUser();
+            test.LoginLogoutWithCorrectCredentialsUser();
+            test.ChangeCredentialsUser(null);
+            test.ChangeCredentialsUser(false);
+            test.RegisterCorrectCredentialstUser();
+            test.CannotRegisterTwiceUser();
+            test.SetAdminRoleAdmin();
+            test.CheckStatisticsAdmin();
+            test.DeleteUserAdmin();
             test.SendRequestUser();
-            // TODO admin uprava a schvalenie requestu
-            // TODO user nemoze upravovat ani mazat schvaleny request
-            // TODO admin vymazanie requestu
-            // TODO pridanie nevalidnej fotografie
-            // TODO pridanie validnej fotografie
-            // TODO vymazanie fotografie
+            test.EditRequestUser();
+            test.FinishRequestAdmin();
+            test.CheckRequestUser();
+            test.DeleteRequestAdmin();
 
             test.End();
         }

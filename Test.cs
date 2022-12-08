@@ -27,7 +27,7 @@ namespace SemestralnaPracaTest
         public void End()
         {
             report.Save();
-            data.CloseConnection();
+            data.Close();
         }
 
         public IWebDriver GetLoggedDriver(bool? loginRole, bool? passwordRole)
@@ -70,7 +70,6 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(login);
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
                 input.Add(nameof(login), login);
-                input.Add(nameof(password), password);
                 driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
 
                 return driver;
@@ -266,6 +265,7 @@ namespace SemestralnaPracaTest
         {
             IWebDriver driver = GetLoggedDriver(false, false);
             string date;
+            int count = data.GetCount("REQUESTS");
 
             try
             {
@@ -280,6 +280,7 @@ namespace SemestralnaPracaTest
                 driver.SwitchTo().Alert().Accept();
                 Assert.IsTrue(driver.FindElement(By.XPath("/html[1]/body[1]/div[2]/p[1]")).Displayed);
                 Assert.IsTrue(data.CheckRequestDate(DateTime.Parse(date)));
+                Assert.AreEqual(data.GetCount("REQUESTS"), (count - 1));
 
                 driver.Quit();
 
@@ -334,6 +335,7 @@ namespace SemestralnaPracaTest
         public void DeleteUserAdmin()
         {
             IWebDriver driver = GetLoggedDriver(true, true);
+            int count = data.GetCount("CREDENTIALS");
             string mail = (ConfigurationManager.AppSettings["DummyMail"].ToString());
             string password = (ConfigurationManager.AppSettings["DummyPassword"].ToString());
             input.Add(nameof(mail), mail);
@@ -355,6 +357,7 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
                 Assert.IsTrue(driver.FindElement(By.XPath("//a[contains(text(),'daný účet neexistuje')]")).Displayed);
+                Assert.AreEqual(data.GetCount("CREDENTIALS"), (count - 1));
 
                 driver.Quit();
 
@@ -443,6 +446,86 @@ namespace SemestralnaPracaTest
 
                 new SelectElement(driver.FindElement(By.XPath("//select[@id='monthInput']"))).SelectByIndex(data.GetRandomNumber(12));
                 driver.FindElement(By.XPath("//button[@id='refreshMonth']")).Click();
+
+                driver.Quit();
+
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
+            }
+            catch (Exception exception)
+            {
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
+            }
+        }
+
+        public void FinishRequestAdmin()
+        {
+            IWebDriver driver = GetLoggedDriver(true, true);
+            int status = 3;
+            string result = data.GetRandomText(data.GetRandomNumber(100));
+            input.Add(nameof(status), status.ToString());
+            input.Add(nameof(result), result);
+
+            try
+            {
+                driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
+                driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA ŽIADOSTÍ')]")).Click();
+                driver.FindElement(By.XPath("/html[1]/body[1]/div[2]/div[1]/div[3]/a[1]/i[1]")).Click();
+                new SelectElement(driver.FindElement(By.XPath("//select[@id='statusInput']"))).SelectByIndex(status);
+                driver.FindElement(By.XPath("//input[@id='resultInput']")).SendKeys(result);
+                driver.FindElement(By.XPath("//button[contains(text(),'UPRAVIŤ')]")).Click();
+                Assert.IsTrue(driver.FindElement(By.XPath("//p[contains(text(),'požiadavka bola úspešne aktualizovaná')]")).Displayed);
+
+                driver.Quit();
+
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
+            }
+            catch (Exception exception)
+            {
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
+            }
+        }
+
+        public void CheckRequestUser()
+        {
+            IWebDriver driver = GetLoggedDriver(false, false);
+
+            try
+            {
+                driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
+                driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA ŽIADOSTÍ')]")).Click();
+                driver.FindElement(By.XPath("/html[1]/body[1]/div[2]/div[1]/div[3]/a[1]/i[1]")).Click();
+                Assert.IsFalse(driver.FindElement(By.XPath("//button[contains(text(),'UPRAVIŤ')]")).Enabled);
+                Assert.IsTrue(driver.FindElement(By.XPath("//input[@id='scheduledInput']")).GetAttribute("readonly").Equals("true"));
+                Assert.IsTrue(driver.FindElement(By.XPath("//textarea[@id='descriptionInput']")).GetAttribute("readonly").Equals("true"));
+                Assert.IsTrue(driver.FindElement(By.XPath("//input[@id='resultInput']")).GetAttribute("readonly").Equals("true"));
+
+                driver.Quit();
+
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
+            }
+            catch (Exception exception)
+            {
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
+            }
+        }
+
+        public void DeleteRequestAdmin()
+        {
+            IWebDriver driver = GetLoggedDriver(true, true);
+            int count = data.GetCount("REQUESTS");
+            int status = 3;
+            string result = data.GetRandomText(data.GetRandomNumber(100));
+            input.Add(nameof(status), status.ToString());
+            input.Add(nameof(result), result);
+
+            try
+            {
+                driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
+                driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA ŽIADOSTÍ')]")).Click();
+                driver.FindElement(By.XPath("/html[1]/body[1]/div[2]/div[1]/div[4]/a[1]/i[1]")).Click();
+                driver.SwitchTo().Alert().Accept();
+                Assert.IsTrue(driver.FindElement(By.XPath("/html[1]/body[1]/div[2]/p[1]")).Displayed);
+                Assert.AreEqual(data.GetCount("REQUESTS"), (count - 1));
 
                 driver.Quit();
 

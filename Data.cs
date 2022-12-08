@@ -17,6 +17,19 @@ namespace SemestralnaPracaTest
             connection.Open();
         }
 
+        public int GetCount(string table)
+        {
+            int count = 0;
+            string query = ("select count(*) from " + table);
+
+            using (SqlCommand cmd = new SqlCommand(query, connection))
+            {
+                count = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+
+            return count;
+        }
+
         public int GetRandomNumber(int range)
         { 
             return (random.Next() % range);
@@ -24,7 +37,7 @@ namespace SemestralnaPracaTest
 
         public string GetRandomText(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnoprstuvwxyz";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
@@ -51,7 +64,7 @@ namespace SemestralnaPracaTest
             return date;
         }
 
-        public void CloseConnection()
+        public void Close()
         { 
             connection.Close();
         }

@@ -23,6 +23,7 @@ namespace SemestralnaPracaTest
         {
             worksheet.Cell(line, 1).Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
             worksheet.Cell(line, 2).Value = name;
+            worksheet.Cell(line, 2).Style.Font.Bold = true;
             if (exception == null)
             {
                 worksheet.Cell(line, 3).Value = "OK";
@@ -49,7 +50,8 @@ namespace SemestralnaPracaTest
 
         public void Save()
         {
-            worksheet.Column(1).Style.NumberFormat.Format = "dd-MM-yyyy HH:mm:ss";
+            worksheet.Column(1).Style.NumberFormat.Format = "dd.MM.yyyy HH:mm:ss";
+            worksheet.Column(4).SetDataType(XLDataType.Text);
             worksheet.Columns().AdjustToContents();
             workbook.SaveAs(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Test.xlsx");
         }
