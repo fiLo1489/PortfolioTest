@@ -28,13 +28,23 @@ namespace SemestralnaPracaTest
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public DateTime GetRandomDate(string table)
+        public DateTime GetRandomNextDate()
+        { 
+            return DateTime.Now.AddDays(GetRandomNumber(90));
+        }
+
+        public DateTime GetRandomPastDate()
+        { 
+            return DateTime.Now.AddDays(-GetRandomNumber(90));
+        }
+
+        public DateTime GetRandomRequestDate()
         {
             DateTime date;
 
             do
             {
-                date = DateTime.Now.AddDays(GetRandomNumber(90));
+                date = GetRandomNextDate();
             }
             while (!CheckRequestDate(date));
 
