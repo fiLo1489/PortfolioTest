@@ -1,13 +1,10 @@
-﻿using Microsoft.SqlServer.Server;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.DevTools.V106.Debugger;
 using System;
 using System.Configuration;
 using OpenQA.Selenium.Support.UI;
-using System.Threading;
-using DocumentFormat.OpenXml.Spreadsheet;
+using System.Collections.Generic;
 
 namespace SemestralnaPracaTest
 {
@@ -16,6 +13,7 @@ namespace SemestralnaPracaTest
         private Report report;
         private Data data;
         private IWebDriver driver;
+        Dictionary<string, string> input;
 
         #region CONTROLS
 
@@ -23,6 +21,7 @@ namespace SemestralnaPracaTest
         {
             report = new Report();
             data = new Data();
+            input = new Dictionary<string, string>();
         }
 
         public void End()
@@ -34,6 +33,7 @@ namespace SemestralnaPracaTest
         public IWebDriver GetLoggedDriver(bool? login, bool? password)
         {
             IWebDriver driver = GetUnloggedDriver();
+            input.Clear();
 
             driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
             driver.FindElement(By.XPath("//a[contains(text(),'PRIHLÁSENIE')]")).Click();
@@ -41,27 +41,35 @@ namespace SemestralnaPracaTest
             {
                 driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["AdminMail"].ToString());
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["AdminPassword"].ToString());
+                input.Add("login", ConfigurationManager.AppSettings["AdminMail"].ToString());
+                input.Add("password", ConfigurationManager.AppSettings["AdminPassword"].ToString());
             }
             else if (login == false)
             {
                 driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["UserMail"].ToString());
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["UserPassword"].ToString());
+                input.Add("login", ConfigurationManager.AppSettings["UserMail"].ToString());
+                input.Add("password", ConfigurationManager.AppSettings["UserPassword"].ToString());
             }
             else
             {
                 if (password == true)
                 {
                     driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["AdminMail"].ToString());
+                    input.Add("login", ConfigurationManager.AppSettings["AdminMail"].ToString());
                 }
                 else if (password == false)
                 {
                     driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["UserMail"].ToString());
+                    input.Add("login", ConfigurationManager.AppSettings["UserMail"].ToString());
                 }
                 else
                 {
                     driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["DummyMail"].ToString());
+                    input.Add("login", ConfigurationManager.AppSettings["DummyMail"].ToString());
                 }
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPassword"].ToString());
+                input.Add("password", ConfigurationManager.AppSettings["DummyPassword"].ToString());
             }
             driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
 
@@ -76,6 +84,7 @@ namespace SemestralnaPracaTest
 
             driver.Manage().Cookies.DeleteCookieNamed("PortfolioSession");
             driver.Navigate().GoToUrl(ConfigurationManager.ConnectionStrings["Image"].ConnectionString);
+            input.Clear();
 
             return driver;
         }
@@ -102,16 +111,25 @@ namespace SemestralnaPracaTest
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void ChangeCredentialsUser(bool? role)
         {
+            string name = (role == null ? ConfigurationManager.AppSettings["DummyName"].ToString() : ConfigurationManager.AppSettings["UserName"].ToString());
+            string surname = (role == null ? ConfigurationManager.AppSettings["DummySurname"].ToString() : ConfigurationManager.AppSettings["UserSurname"].ToString());
+            string phone = (role == null ? ConfigurationManager.AppSettings["DummyPhone"].ToString() : ConfigurationManager.AppSettings["UserPhone"].ToString());
+            string password = (role == null ? ConfigurationManager.AppSettings["DummyPassword"].ToString() : ConfigurationManager.AppSettings["UserPassword"].ToString());
+            input.Add("name", name);
+            input.Add("surname", surname);
+            input.Add("phone", phone);
+            input.Add("password", password);
+
             try
             {
                 IWebDriver driver;
@@ -127,43 +145,48 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'ÚDAJE')]")).Click();
                 driver.FindElement(By.XPath("//input[@id='nameInput']")).Clear();
-                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(role == null ? ConfigurationManager.AppSettings["DummyName"].ToString() : ConfigurationManager.AppSettings["UserName"].ToString());
+                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(name);
                 driver.FindElement(By.XPath("//input[@id='surnameInput']")).Clear();
-                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(role == null ? ConfigurationManager.AppSettings["DummySurname"].ToString() : ConfigurationManager.AppSettings["UserSurname"].ToString());
+                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(surname);
                 driver.FindElement(By.XPath("//input[@id='phoneInput']")).Clear();
-                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(role == null ? ConfigurationManager.AppSettings["DummyPhone"].ToString() : ConfigurationManager.AppSettings["UserPhone"].ToString());
+                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(phone);
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).Clear();
-                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(role == null ? ConfigurationManager.AppSettings["DummyPassword"].ToString() : ConfigurationManager.AppSettings["UserPassword"].ToString());
+                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).Clear();
-                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(role == null ? ConfigurationManager.AppSettings["DummyPassword"].ToString() : ConfigurationManager.AppSettings["UserPassword"].ToString());
+                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//button[contains(text(),'ULOŽIŤ')]")).Click();
                 Assert.IsTrue(driver.FindElement(By.XPath("//p[contains(text(),'údaje boli uložené')]")).Displayed);
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'ÚDAJE')]")).Click();
-                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='nameInput']")).GetAttribute("value").ToString(), role == null ? ConfigurationManager.AppSettings["DummyName"].ToString() : ConfigurationManager.AppSettings["UserName"].ToString());
-                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='surnameInput']")).GetAttribute("value").ToString(), role == null ? ConfigurationManager.AppSettings["DummySurname"].ToString() : ConfigurationManager.AppSettings["UserSurname"].ToString());
-                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='phoneInput']")).GetAttribute("value").ToString(), role == null ? ConfigurationManager.AppSettings["DummyPhone"].ToString() : ConfigurationManager.AppSettings["UserPhone"].ToString());
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='nameInput']")).GetAttribute("value").ToString(), name);
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='surnameInput']")).GetAttribute("value").ToString(), surname);
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='phoneInput']")).GetAttribute("value").ToString(), phone);
 
                 driver.Quit();
 
-                report.Write((System.Reflection.MethodBase.GetCurrentMethod().Name + role), true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write((System.Reflection.MethodBase.GetCurrentMethod().Name + role), false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void SendRequestUser(bool role)
         {
+            int category = data.GetRandomNumber(5);
+            string description = data.GetRandomText(data.GetRandomNumber(100));
+            DateTime date = data.GetRandomRequestDate();
+            input.Add("role", (role == true ? "Admin" : "User"));
+            input.Add("category", category.ToString());
+            input.Add("description", description);
+            input.Add("date", date.ToString());
+
             try
             {
                 IWebDriver driver = GetLoggedDriver(false, false);
-                int category = data.GetRandomNumber(5);
-                string description = data.GetRandomText(data.GetRandomNumber(100));
-                DateTime date = data.GetRandomRequestDate();
-
+                
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'ODOSLANIE ŽIADOSTI')]")).Click();
                 new SelectElement(driver.FindElement(By.XPath("//select[@id='categoryInput']"))).SelectByIndex(category);
@@ -182,21 +205,24 @@ namespace SemestralnaPracaTest
 
                 driver.Quit();
 
-                report.Write((System.Reflection.MethodBase.GetCurrentMethod().Name + (role ? "Admin" : "User")), true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write((System.Reflection.MethodBase.GetCurrentMethod().Name + (role ? "Admin" : "User")), false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void EditRequestUser()
         {
+            string description = data.GetRandomText(data.GetRandomNumber(100));
+            DateTime date = data.GetRandomRequestDate();
+            input.Add("description", description);
+            input.Add("date", date.ToString());
+
             try
             {
                 IWebDriver driver = GetLoggedDriver(false, false);
-                string description = data.GetRandomText(data.GetRandomNumber(100));
-                DateTime date = data.GetRandomRequestDate();
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA ŽIADOSTÍ')]")).Click();
@@ -216,11 +242,11 @@ namespace SemestralnaPracaTest
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
@@ -245,46 +271,60 @@ namespace SemestralnaPracaTest
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void RegisterCorrectCredentialstUser()
         {
+            string mail = (ConfigurationManager.AppSettings["DummyMail"].ToString());
+            string name = (ConfigurationManager.AppSettings["DummyName"].ToString());
+            string surname = (ConfigurationManager.AppSettings["DummySurname"].ToString());
+            string phone = (ConfigurationManager.AppSettings["DummyPhone"].ToString());
+            string password = (ConfigurationManager.AppSettings["DummyPassword"].ToString());
+            input.Add("mail", mail);
+            input.Add("name", name);
+            input.Add("surname", surname);
+            input.Add("phone", phone);
+            input.Add("password", password);
+
             try
             {
                 IWebDriver driver = GetUnloggedDriver();
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'REGISTRÁCIA')]")).Click();
-                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["DummyMail"].ToString());
-                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(ConfigurationManager.AppSettings["DummyName"].ToString());
-                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(ConfigurationManager.AppSettings["DummySurname"].ToString());
-                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPhone"].ToString());
-                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPassword"].ToString());
-                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPassword"].ToString());
+                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(mail);
+                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(name);
+                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(surname);
+                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(phone);
+                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
+                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//button[contains(text(),'REGISTROVAŤ')]")).Click();
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'ÚDAJE')]")).Click();
-                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='mailInput']")).GetAttribute("value"), ConfigurationManager.AppSettings["DummyMail"].ToString());
+                Assert.AreEqual(driver.FindElement(By.XPath("//input[@id='mailInput']")).GetAttribute("value"), mail);
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void DeleteUserAdmin()
         {
+            string mail = (ConfigurationManager.AppSettings["DummyMail"].ToString());
+            string password = (ConfigurationManager.AppSettings["DummyPassword"].ToString());
+            
             try
             {
                 IWebDriver driver = GetLoggedDriver(true, true);
@@ -299,50 +339,64 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//a[contains(text(),'ODHLÁSENIE')]")).Click();
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'PRIHLÁSENIE')]")).Click();
-                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["DummyMail"].ToString());
-                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["AdminPassword"].ToString());
+                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(mail);
+                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
                 Assert.IsTrue(driver.FindElement(By.XPath("//a[contains(text(),'daný účet neexistuje')]")).Displayed);
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void CannotRegisterTwiceUser()
         {
+            string mail = (ConfigurationManager.AppSettings["DummyMail"].ToString());
+            string name = (ConfigurationManager.AppSettings["DummyName"].ToString());
+            string surname = (ConfigurationManager.AppSettings["DummySurname"].ToString());
+            string phone = (ConfigurationManager.AppSettings["DummyPhone"].ToString());
+            string password = (ConfigurationManager.AppSettings["DummyPassword"].ToString());
+            input.Add("mail", mail);
+            input.Add("name", name);
+            input.Add("surname", surname);
+            input.Add("phone", phone);
+            input.Add("password", password);
+
             try
             {
                 IWebDriver driver = GetUnloggedDriver();
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'REGISTRÁCIA')]")).Click();
-                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(ConfigurationManager.AppSettings["DummyMail"].ToString());
-                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(ConfigurationManager.AppSettings["DummyName"].ToString());
-                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(ConfigurationManager.AppSettings["DummySurname"].ToString());
-                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPhone"].ToString());
-                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPassword"].ToString());
-                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(ConfigurationManager.AppSettings["DummyPassword"].ToString());
+                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(mail);
+                driver.FindElement(By.XPath("//input[@id='nameInput']")).SendKeys(name);
+                driver.FindElement(By.XPath("//input[@id='surnameInput']")).SendKeys(surname);
+                driver.FindElement(By.XPath("//input[@id='phoneInput']")).SendKeys(phone);
+                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
+                driver.FindElement(By.XPath("//input[@id='passwordConfirmationInput']")).SendKeys(password);
                 driver.FindElement(By.XPath("//button[contains(text(),'REGISTROVAŤ')]")).Click();
                 Assert.IsTrue(driver.FindElement(By.XPath("//a[contains(text(),'účet so zadaným mailom už existuje')]")).Displayed);
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void SetAdminRoleAdmin()
         {
+            int role = 1;
+            input.Add("role", role.ToString());
+            
             try
             {
                 IWebDriver driver = GetLoggedDriver(true, true);
@@ -350,26 +404,29 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'SPRÁVA POUŽIVATEĽOV')]")).Click();
                 driver.FindElement(By.XPath("//body/div[2]/div[2]/div[3]/a[1]/i[1]")).Click();
-                new SelectElement(driver.FindElement(By.XPath("//select[@id='roleInput']"))).SelectByIndex(1);
+                new SelectElement(driver.FindElement(By.XPath("//select[@id='roleInput']"))).SelectByIndex(role);
                 driver.FindElement(By.XPath("//button[contains(text(),'ULOŽIŤ')]")).Click();
                 Assert.IsTrue(driver.FindElement(By.XPath("//p[contains(text(),'údaje boli uložené')]")).Displayed);
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 
         public void CheckStatisticsAdmin()
         {
+            DateTime date = data.GetRandomPastDate();
+            input.Add("input", date.ToString());
+
             try
             {
                 IWebDriver driver = GetLoggedDriver(null, null);
-                DateTime date = data.GetRandomPastDate();
+                
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'ŠTATISTIKA')]")).Click();
@@ -381,11 +438,11 @@ namespace SemestralnaPracaTest
 
                 driver.Quit();
 
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, true, null);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
             }
             catch (Exception exception)
             {
-                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, false, exception);
+                report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
 

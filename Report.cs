@@ -1,5 +1,7 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.SqlServer.Server;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace SemestralnaPracaTest
@@ -17,11 +19,11 @@ namespace SemestralnaPracaTest
             line = 1;
         }
 
-        public void Write(string name, bool result, Exception exception)
+        public void Write(string name, Exception exception, Dictionary<string, string> input)
         {
             worksheet.Cell(line, 1).Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
             worksheet.Cell(line, 2).Value = name;
-            if (result)
+            if (exception == null)
             {
                 worksheet.Cell(line, 3).Value = "OK";
                 worksheet.Cell(line, 3).Style.Fill.BackgroundColor = XLColor.Green;
@@ -33,6 +35,16 @@ namespace SemestralnaPracaTest
                 worksheet.Cell(line, 4).Value = exception.Message;
             }
             line++;
+
+            if (input != null)
+            {
+                foreach (KeyValuePair<string, string> item in input)
+                {
+                    worksheet.Cell(line, 3).Value = item.Key;
+                    worksheet.Cell(line, 4).Value = item.Value;
+                    line++;
+                }
+            }
         }
 
         public void Save()
