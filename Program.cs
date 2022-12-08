@@ -14,10 +14,10 @@
             //test.SetAdminRoleAdmin();
             //test.CheckStatisticsAdmin();
             //test.DeleteUserAdmin();
-            //test.SendRequestUser(false);
+            //test.SendRequestUser();
             //test.EditRequestUser();
             //test.DeleteRequestUser();
-            //test.SendRequestUser(true);
+            test.SendRequestUser();
             // TODO admin uprava a schvalenie requestu
             // TODO user nemoze upravovat ani mazat schvaleny request
             // TODO admin vymazanie requestu
