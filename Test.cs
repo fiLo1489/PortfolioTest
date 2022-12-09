@@ -517,10 +517,6 @@ namespace SemestralnaPracaTest
         {
             IWebDriver driver = GetLoggedDriver(true, true);
             int count = data.GetCount("REQUESTS");
-            int status = 3;
-            string result = data.GetRandomText(data.GetRandomNumber(100));
-            input.Add(nameof(status), status.ToString());
-            input.Add(nameof(result), result);
 
             try
             {
@@ -540,25 +536,6 @@ namespace SemestralnaPracaTest
                 report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
             }
         }
-
-        //public void TestName()
-        //{
-        //    IWebDriver driver = GetLoggedDriver(null, null);
-        //    input.Add("input", "");
-
-        //    try
-        //    {
-        //        driver.FindElement(By.XPath("")).Click();
-
-        //        driver.Quit();
-
-        //        report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, null, input);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        report.Write(System.Reflection.MethodBase.GetCurrentMethod().Name, exception, input);
-        //    }
-        //}
 
         #endregion
     }
