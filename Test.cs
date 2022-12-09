@@ -436,7 +436,9 @@ namespace SemestralnaPracaTest
         {
             IWebDriver driver = GetLoggedDriver(null, null);
             DateTime date = data.GetRandomPastDate();
+            int month = data.GetRandomNumber(12);
             input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
+            input.Add(nameof(month), month.ToString());
 
             try
             {
@@ -445,7 +447,7 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//input[@id='dateInput']")).SendKeys(date.ToString("MM-dd-yyyy"));
                 driver.FindElement(By.XPath("//button[@id='refreshDate']")).Click();
 
-                new SelectElement(driver.FindElement(By.XPath("//select[@id='monthInput']"))).SelectByIndex(data.GetRandomNumber(12));
+                new SelectElement(driver.FindElement(By.XPath("//select[@id='monthInput']"))).SelectByIndex(month);
                 driver.FindElement(By.XPath("//button[@id='refreshMonth']")).Click();
 
                 driver.Quit();
