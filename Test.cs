@@ -36,41 +36,41 @@ namespace SemestralnaPracaTest
             {
                 input.Clear();
                 IWebDriver driver = GetUnloggedDriver();
-                string login = string.Empty;
-                string password = string.Empty;
+                string _LOGIN = string.Empty;
+                string _PASSWORD = string.Empty;
 
                 driver.FindElement(By.XPath("//a[@id='navbarDropdownMenuLink']")).Click();
                 driver.FindElement(By.XPath("//a[contains(text(),'PRIHLÁSENIE')]")).Click();
                 if (loginRole == true)
                 {
-                    login = ConfigurationManager.AppSettings["AdminMail"].ToString();
-                    password = ConfigurationManager.AppSettings["AdminPassword"].ToString();
+                    _LOGIN = ConfigurationManager.AppSettings["AdminMail"].ToString();
+                    _PASSWORD = ConfigurationManager.AppSettings["AdminPassword"].ToString();
                 }
                 else if (loginRole == false)
                 {
-                    login = ConfigurationManager.AppSettings["UserMail"].ToString();
-                    password = ConfigurationManager.AppSettings["UserPassword"].ToString();
+                    _LOGIN = ConfigurationManager.AppSettings["UserMail"].ToString();
+                    _PASSWORD = ConfigurationManager.AppSettings["UserPassword"].ToString();
                 }
                 else
                 {
                     if (passwordRole == true)
                     {
-                        login = ConfigurationManager.AppSettings["AdminMail"].ToString();
+                        _LOGIN = ConfigurationManager.AppSettings["AdminMail"].ToString();
                     }
                     else if (passwordRole == false)
                     {
-                        login = ConfigurationManager.AppSettings["UserMail"].ToString();
+                        _LOGIN = ConfigurationManager.AppSettings["UserMail"].ToString();
                     }
                     else
                     {
-                        login = ConfigurationManager.AppSettings["DummyMail"].ToString();
+                        _LOGIN = ConfigurationManager.AppSettings["DummyMail"].ToString();
                     }
-                    password = ConfigurationManager.AppSettings["DummyPassword"].ToString();
+                    _PASSWORD = ConfigurationManager.AppSettings["DummyPassword"].ToString();
                 }
-                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(login);
-                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
-                input.Add(nameof(login), login);
-                input.Add(nameof(password), password);
+                driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(_LOGIN);
+                driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(_PASSWORD);
+                input.Add(nameof(_LOGIN), _LOGIN);
+                input.Add(nameof(_PASSWORD), _PASSWORD);
                 driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
 
                 return driver;
@@ -196,7 +196,7 @@ namespace SemestralnaPracaTest
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(category), category.ToString());
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString());
+            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
 
             try
             {
@@ -232,7 +232,7 @@ namespace SemestralnaPracaTest
             string description = data.GetRandomText(data.GetRandomNumber(100));
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString());
+            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
 
             try
             {
@@ -436,7 +436,7 @@ namespace SemestralnaPracaTest
         {
             IWebDriver driver = GetLoggedDriver(null, null);
             DateTime date = data.GetRandomPastDate();
-            input.Add(nameof(date), date.ToString());
+            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
 
             try
             {
