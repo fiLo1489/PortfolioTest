@@ -70,6 +70,7 @@ namespace SemestralnaPracaTest
                 driver.FindElement(By.XPath("//input[@id='mailInput']")).SendKeys(login);
                 driver.FindElement(By.XPath("//input[@id='passwordInput']")).SendKeys(password);
                 input.Add(nameof(login), login);
+                input.Add(nameof(password), password);
                 driver.FindElement(By.XPath("//button[contains(text(),'PRIHLÁSIŤ')]")).Click();
 
                 return driver;
@@ -292,7 +293,7 @@ namespace SemestralnaPracaTest
             }
         }
 
-        public void RegisterCorrectCredentialstUser()
+        public void RegisterCorrectCredentialsUser()
         {
             IWebDriver driver = GetUnloggedDriver();
             string mail = (ConfigurationManager.AppSettings["DummyMail"].ToString());

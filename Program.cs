@@ -9,7 +9,7 @@
             test.LoginLogoutWithCorrectCredentialsUser();
             test.ChangeCredentialsUser(null);
             test.ChangeCredentialsUser(false);
-            test.RegisterCorrectCredentialstUser();
+            test.RegisterCorrectCredentialsUser();
             test.CannotRegisterTwiceUser();
             test.SetAdminRoleAdmin();
             test.CheckStatisticsAdmin();
