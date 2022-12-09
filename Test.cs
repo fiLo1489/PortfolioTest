@@ -196,7 +196,7 @@ namespace SemestralnaPracaTest
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(category), category.ToString());
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
+            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
 
             try
             {
@@ -232,7 +232,7 @@ namespace SemestralnaPracaTest
             string description = data.GetRandomText(data.GetRandomNumber(100));
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
+            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
 
             try
             {
@@ -436,7 +436,7 @@ namespace SemestralnaPracaTest
         {
             IWebDriver driver = GetLoggedDriver(null, null);
             DateTime date = data.GetRandomPastDate();
-            input.Add(nameof(date), date.ToString("dd.mm.yyyy"));
+            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
 
             try
             {
