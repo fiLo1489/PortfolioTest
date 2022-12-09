@@ -51,7 +51,6 @@ namespace SemestralnaPracaTest
         public void Save()
         {
             worksheet.Column(1).Style.NumberFormat.Format = "dd.MM.yyyy HH:mm:ss";
-            worksheet.Column(4).SetDataType(XLDataType.Text);
             worksheet.Columns().AdjustToContents();
             workbook.SaveAs(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Test.xlsx");
         }

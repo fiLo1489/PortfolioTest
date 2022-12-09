@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using OpenQA.Selenium.Support.UI;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SemestralnaPracaTest
 {
@@ -196,7 +197,7 @@ namespace SemestralnaPracaTest
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(category), category.ToString());
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
+            input.Add(nameof(date), date.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
 
             try
             {
@@ -232,7 +233,7 @@ namespace SemestralnaPracaTest
             string description = data.GetRandomText(data.GetRandomNumber(100));
             DateTime date = data.GetRandomRequestDate();
             input.Add(nameof(description), description);
-            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
+            input.Add(nameof(date), date.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
 
             try
             {
@@ -437,7 +438,7 @@ namespace SemestralnaPracaTest
             IWebDriver driver = GetLoggedDriver(null, null);
             DateTime date = data.GetRandomPastDate();
             int month = data.GetRandomNumber(12);
-            input.Add(nameof(date), date.ToString("MM-dd-yyyy"));
+            input.Add(nameof(date), date.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
             input.Add(nameof(month), month.ToString());
 
             try
